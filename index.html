@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <base href="/boliseema/">
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Work out the most you can bid per kg and per crate at the wholesale mandi tonight, and how many kg to bring home — on one folded A4 pocket card. Free, private, offline. This demo stores nothing.">
+
+  <meta property="og:title" content="Mandi bid calculator — boliseema">
+  <meta property="og:description" content="Enter the retail rate you can really get, your own shrink, and tonight's charges. Get the maximum you may pay per kg and per crate, and the break-even above which you are working for free.">
+  <meta property="og:type" content="website">
+
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="boliseema">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+  <link rel="icon" type="image/png" href="favicon.png"/>
+  <title>Mandi Bid Calculator — how much to pay per kg to make a profit — boliseema</title>
+  <link rel="manifest" href="manifest.json">
+
+  <style>
+    :root { color-scheme: light dark; }
+    body { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", sans-serif;
+      font-feature-settings: "tnum"; }
+    #seo-landing { max-width: 760px; margin: 0 auto; padding: 24px 20px 8px; line-height: 1.55;
+      color: #231A28; background: #FBF7FA; }
+    #seo-landing h1 { font-size: 1.5rem; color: #6B1F5C; margin: 0 0 10px; line-height: 1.25; }
+    #seo-landing h2 { font-size: 1.05rem; margin: 22px 0 6px; }
+    #seo-landing h3 { font-size: 0.95rem; margin: 16px 0 4px; font-weight: 600; }
+    #seo-landing code { background: rgba(0,0,0,0.06); padding: 1px 5px; border-radius: 4px; }
+    #seo-landing table { border-collapse: collapse; width: 100%; font-size: 0.9rem; margin: 8px 0; }
+    #seo-landing th, #seo-landing td { border: 1px solid #8A7A8E; padding: 6px 8px; text-align: left; }
+    #seo-landing th { background: #F3EBF1; }
+    #seo-landing .muted { color: #5D5062; font-size: 0.9rem; }
+    /* The motif: the ceiling rule — a plum bar with everything below it filled
+       and a hard stop on top. */
+    .ceiling { width: 64px; margin-bottom: 12px; }
+    .ceiling .bar { height: 5px; background: #6B1F5C; }
+    .ceiling .fill { height: 22px; background: rgba(107,31,92,0.35); margin-top: 3px; }
+    #flutter-app { height: 82vh; min-height: 560px; border-top: 4px solid #6B1F5C; }
+    @media (prefers-color-scheme: dark) {
+      #seo-landing { color: #EFE6F2; background: #191320; }
+      #seo-landing h1 { color: #D9A6D2; }
+      #seo-landing code { background: rgba(255,255,255,0.12); }
+      #seo-landing th, #seo-landing td { border-color: #7C6A85; }
+      #seo-landing th { background: #231B2B; }
+      #seo-landing .muted { color: #B9A7BE; }
+      .ceiling .bar { background: #D9A6D2; }
+      .ceiling .fill { background: rgba(217,166,210,0.35); }
+      #flutter-app { border-top-color: #D9A6D2; }
+    }
+  </style>
+
+  <!-- The Flutter canvas is not crawlable, so the facts live in real HTML plus
+       JSON-LD - and every answer in the FAQPage block below is ALSO rendered as
+       visible HTML further down, because marked-up content a reader cannot see
+       violates Google's structured-data policy.
+
+       Nothing on this page contacts a third-party host: CanvasKit is the
+       vendored copy (--no-web-resources-cdn) and fontFallbackBaseUrl is pinned
+       to this origin. It is not a page that makes NO request - it loads its own
+       script, wasm and font files from here. -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "boliseema",
+    "applicationCategory": "BusinessApplication",
+    "operatingSystem": "Web, Windows, macOS, Linux, Android, iOS",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "INR" },
+    "description": "A mandi bid calculator for vegetable vendors. Enter the retail rate you can realistically get, your own shrink or cull percentage, and this trip's charges — tempo hire, mandi commission, hamali per crate — and it works out the most you may bid per kg and per crate, how many kg to bring home, and the break-even price above which the trip pays you nothing. Printed as one folded A4 pocket card."
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "How much should I pay per kg at the mandi to make a profit?",
+        "acceptedAnswer": { "@type": "Answer", "text": "There is one number that answers it, and it comes from four things you already know: the retail rate you can realistically get, your own shrink or cull percentage, the mandi commission and hamali, and your share of the trip's fixed cost. boliseema solves for the highest bid at which all of that still leaves your margin. It is a ceiling, not a recommendation — the auction is live and you still have to come home with stock." }
+      },
+      {
+        "@type": "Question",
+        "name": "Why does the calculator divide costs by whole crates instead of by the kilograms I planned to buy?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Because a mandi sells crates, not kilograms. If your plan weight is 136.363 kg and a crate holds 25 kg, you go home with five crates — 125 kg — not 136.363. Dividing the trip's fixed cost by the larger figure would understate the cost per kg and therefore overstate the ceiling. On the worked example above that difference is 17 paise per kg and 4 rupees 25 paise per crate, in the direction that costs you money. The leftover kilograms that do not make a whole crate are named on the row rather than quietly bought." }
+      },
+      {
+        "@type": "Question",
+        "name": "Is the printed ceiling still right if I come home with fewer crates than the card says?",
+        "acceptedAnswer": { "@type": "Answer", "text": "No, and this is the one place the card can be optimistic. The ceiling is worked out against the whole crates in your plan weight, so if you buy fewer, the same tempo hire and entry fee spread over fewer kilograms and the true ceiling drops. On the tomato row above, buying 3 of the 5 crates moves the real ceiling from 23 rupees 47 paise to 21 rupees 71 paise \u2014 about 7 percent. That is why every row prints the sentence \u0022This ceiling holds at 5 whole crates\u0022 beside the number. The rounding is never optimistic; the crate count is the assumption you have to hold to." }
+      },
+      {
+        "@type": "Question",
+        "name": "Why does it refuse to print anything until I say how many days until my next trip?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Because the whole card depends on it. How many kilograms to bring home is what you expect to sell over the holding period; the crate space that follows from it is how the trip's fixed charges get split; and the split is what sets the ceiling. We have no data for how long anything keeps on a cart in an Indian summer, and we are not going to invent a default. Leave it blank and the card shows a named blank state — no bid, no break-even, and no zero pretending to be an answer." }
+      },
+      {
+        "@type": "Question",
+        "name": "Does boliseema know today's mandi rates?",
+        "acceptedAnswer": { "@type": "Answer", "text": "No, and it never will. There is no rate feed, no scrape, no arrival-price history, and no internet at runtime at all. Every figure comes from a number you typed. The retail rate is what you think you can get — which is the one thing a vendor already knows in their bones and no dataset knows at all." }
+      },
+      {
+        "@type": "Question",
+        "name": "What if no bid clears at the rate I entered?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Then the row prints a dash and one sentence saying the ceiling is below zero at the retail rate, trip cost and margin you entered. It does not say do not buy, it does not say walk away, and it does not suggest cutting your own margin. boliseema prints a ceiling; the decision is yours. If the break-even itself is below zero there is no threshold to print either, so that column shows a dash too rather than a negative rupee figure." }
+      },
+      {
+        "@type": "Question",
+        "name": "Where did the vegetable list and the 25 kg crate weight come from?",
+        "acceptedAnswer": { "@type": "Answer", "text": "The forty names are a starting list we wrote ourselves. The 25 kg crate weight is the same number repeated forty times, which is deliberately and visibly a placeholder rather than research — a per-vegetable table of typical crate weights would be fabrication. Shrink and daily sale ship as zero. Every row that is still untouched wears a PLACEHOLDER chip until you edit it. Weigh your own crate." }
+      },
+      {
+        "@type": "Question",
+        "name": "Does it keep a credit or udhaar ledger?",
+        "acceptedAnswer": { "@type": "Answer", "text": "No, deliberately, and it never records who owes what. There is no dues book, no staff or wage register, and nothing to tap while you are trading. boliseema is done the night before, at home, and there is nothing in it to open during the auction." }
+      },
+      {
+        "@type": "Question",
+        "name": "Where does my data go?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Nowhere. The full app is local-first: your data is a SQLite file on your own machine and the app runs on localhost. There is no account, no sync, no encryption and nothing is uploaded. This web demo keeps everything in your browser tab and a refresh resets it. The page itself loads only its own files from this one origin — no fonts, no scripts and no CanvasKit from anyone else's server — so nothing about you reaches a third party either." }
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <main id="seo-landing">
+    <div class="ceiling" aria-hidden="true"><div class="bar"></div><div class="fill"></div></div>
+    <h1>Mandi bid calculator — the maximum you can pay per kg and per crate, and how many kg to buy</h1>
+
+    <p><strong>boliseema</strong> is for the vegetable vendor who buys at the wholesale
+    mandi — and really for the son or daughter who does the prep the night before the
+    trip. The vendor knows the retail rates in their bones. Nobody in the family has ever
+    worked out what those rates <em>permit</em> them to bid, because the arithmetic is
+    four steps deep and the auction lasts eleven seconds.</p>
+
+    <p>So the arithmetic is done at home, once, the night before, and printed on
+    <strong>one folded A4 pocket card</strong>. There is nothing in this app to tap while
+    you are trading.</p>
+
+    <h2>What you enter, and what it prints</h2>
+    <p>Per vegetable: the <strong>retail rate you can realistically get</strong>, your own
+    <strong>shrink or cull percentage</strong>, and what you sell in a day. Per trip:
+    tempo hire and mandi entry, the commission percentage, hamali per crate, your margin,
+    and <strong>how many days until your next trip</strong>. Out comes, per vegetable, the
+    <strong>most you may bid per kg and per crate</strong>, the <strong>most kg to bring
+    home</strong>, and the <strong>break-even</strong> above which you are working for free.</p>
+
+    <h2>A worked example</h2>
+    <p>Tomato at a retail rate of <code>₹40.00/kg</code>, your own shrink
+    <code>12%</code>, a 25 kg crate, you sell <code>60 kg</code> a day, and it is
+    <code>2 days</code> until your next trip. The trip costs <code>₹640</code> in tempo
+    and entry, mandi commission is <code>6%</code>, hamali is <code>₹12</code> a crate,
+    and you want a <code>20%</code> margin. Onion and coriander are on the same trip and
+    take their share of the ₹640.</p>
+
+    <table>
+      <thead>
+        <tr><th>Vegetable</th><th>MAX per kg</th><th>MAX per crate</th><th>Max kg (whole crates)</th><th>Break-even per kg</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Tomato</td><td>₹23.47</td><td>₹586.75</td><td>136.363 kg (5 crates)</td><td>₹30.11</td></tr>
+        <tr><td>Onion</td><td>₹20.51</td><td>₹1,025.50</td><td>84.210 kg (1 crate)</td><td>₹26.25</td></tr>
+        <tr><td>Coriander</td><td>₹44.66</td><td>₹223.30</td><td>14.285 kg (2 crates)</td><td>₹60.50</td></tr>
+      </tbody>
+    </table>
+
+    <p class="muted">Read the tomato row like this: at ₹40 retail you may pay up to
+    <strong>₹23.47 a kg</strong>, or <strong>₹586.75 for a 25 kg crate</strong>, and the
+    most to bring home is 136.363 kg — of which <strong>five whole crates</strong>, 125 kg,
+    is what you can actually buy. Above <strong>₹30.11/kg</strong> the trip pays you nothing
+    for your own day. The ₹23.47 <strong>holds at five whole crates</strong> — that sentence
+    prints on the row, because buying fewer spreads the same trip charges over fewer kg and
+    puts the true ceiling below the printed one.</p>
+
+    <h2>Why the costs are divided by crates, not by kilograms</h2>
+    <p>A mandi sells crates. If your plan weight is 136.363 kg and a crate holds 25 kg,
+    you go home with <strong>five crates — 125 kg</strong>. So every per-kg cost here is
+    divided by <code>whole crates × crate weight</code>, and the hamali is charged on
+    those crates. Dividing by the plan weight instead would make the ceiling look
+    <strong>17 paise per kg and ₹4.25 per crate higher than it really is</strong> — an
+    error in the direction that costs you money, on the one number the whole card exists
+    for. The kilograms left over that do not make a whole crate are named on the row
+    rather than quietly bought.</p>
+
+    <h2>The one number we refuse to guess</h2>
+    <p><strong>How many days until your next trip</strong> ships blank, has no default,
+    is not copied when you start a new trip from last night's, and is not inferred from
+    the gap between your trip dates. We have no data for how long anything keeps on a cart
+    in an Indian summer, and we are not going to pretend we do. Leave it blank and the card
+    shows a named blank state — no bid, no break-even, and no ₹0.00 standing in for an answer.</p>
+
+    <h2>Rounding goes the safe way — and what that does <em>not</em> cover</h2>
+    <p>Costs round <strong>up</strong>. The maximum bid and the maximum quantity round
+    <strong>down</strong>. So <strong>the rounding is never optimistic</strong>: it may cost
+    you a paisa or two, never the other way.</p>
+    <p><strong>The ceiling itself is only true at the crate count printed on its own
+    row.</strong> Every per-kg cost is divided by the whole crates you plan to buy, so if the
+    bidding runs hot and you come home with three of the five crates the tomato row names, the
+    same ₹640 of tempo hire spreads over 75 kg instead of 125 — and the true ceiling is
+    <strong>₹21.71, not the ₹23.47 on the card</strong>. That is about 7% too high, in the
+    direction that costs you money. So the card prints the sentence
+    <em>"This ceiling holds at 5 whole crates"</em> on the row, beside the number, every time.</p>
+
+    <h2>The retail rate is not independent of the auction</h2>
+    <p>This is the limit most likely to bite. boliseema treats the retail rate you type as
+    <em>fixed</em> and solves backwards for the ceiling — but everyone in your lane bought at
+    the same hammer. On a day when the mandi runs hot, retail moves up with it, and a ceiling
+    worked out from last week's retail rate is then <strong>too low</strong>, not too high.
+    The low–high band exists so you can see how far the ceiling travels when that judgement
+    moves. The card holds your retail rate still; the market does not.</p>
+
+    <h2>What it will not do</h2>
+    <p>No live or historical mandi rates, ever — no scrape, no feed, no arrival prices, and
+    <strong>no internet at runtime</strong>. <strong>No credit, udhaar or dues ledger of any
+    kind.</strong> No staff attendance or wage register. Nothing to enter while you are
+    selling. <strong>No "should you buy" verdict, no walk-away advice, no bid
+    recommendation</strong> — boliseema prints a ceiling and you decide. No grade model, no
+    weather, no seasonality, no forecast. No accounts, no sync, no sharing a card with
+    another vendor. No AI: it is seven integer functions.</p>
+
+    <p class="muted"><strong>lagaat</strong> decodes the bill you were handed
+    <em>after</em> the auction — what it actually cost. boliseema sets the ceiling
+    <em>before</em> the auction — what you may pay. Nothing crosses: boliseema never
+    ingests a bill and lagaat never emits a bid. <strong>paavbhav</strong> prices what you
+    sell; boliseema prices what you buy. <strong>stallpack</strong> reconciles what you
+    packed out against what came back; boliseema decides what to bring home in the first
+    place. <strong>cropmath</strong> costs a farmer's acre; boliseema costs a trader's trip.</p>
+
+    <h2>What this card cannot do</h2>
+    <p>A mandi auction is a live competitive bid, and you have to come home with stock.
+    This card is a reference, not a rule — if the bidding goes past your number you may
+    still be right to take it, you will just know exactly what it is costing you. The
+    retail rate is what you <em>think</em> you can get, not what you will get; the optional
+    low–high band shows how fast the ceiling moves when that judgement is wrong. The
+    maximum kg assumes you sell at your typical daily rate every day until your next trip;
+    a festival, a wedding street or rain makes it wrong. Trip charges are split by crate
+    space, which is an assumption about your tempo, not a fact about your costs — and it is
+    printed on the card so you can argue with it.</p>
+
+    <!-- THE FAQ IS RENDERED HERE, AND THE JSON-LD ABOVE IS A COPY OF IT.
+         Google's structured-data policy requires that marked-up content be
+         visible to the user on the page; the FAQPage block above used to exist
+         with none of its eight answers anywhere in the rendered HTML. Every
+         question and answer below is byte-identical to its JSON-LD twin, and
+         scripts/verify.sh asserts that pairing. -->
+    <h2>Questions</h2>
+
+    <h3>How much should I pay per kg at the mandi to make a profit?</h3>
+    <p>There is one number that answers it, and it comes from four things you already know: the retail rate you can realistically get, your own shrink or cull percentage, the mandi commission and hamali, and your share of the trip's fixed cost. boliseema solves for the highest bid at which all of that still leaves your margin. It is a ceiling, not a recommendation — the auction is live and you still have to come home with stock.</p>
+
+    <h3>Why does the calculator divide costs by whole crates instead of by the kilograms I planned to buy?</h3>
+    <p>Because a mandi sells crates, not kilograms. If your plan weight is 136.363 kg and a crate holds 25 kg, you go home with five crates — 125 kg — not 136.363. Dividing the trip's fixed cost by the larger figure would understate the cost per kg and therefore overstate the ceiling. On the worked example above that difference is 17 paise per kg and 4 rupees 25 paise per crate, in the direction that costs you money. The leftover kilograms that do not make a whole crate are named on the row rather than quietly bought.</p>
+
+    <h3>Is the printed ceiling still right if I come home with fewer crates than the card says?</h3>
+    <p>No, and this is the one place the card can be optimistic. The ceiling is worked out against the whole crates in your plan weight, so if you buy fewer, the same tempo hire and entry fee spread over fewer kilograms and the true ceiling drops. On the tomato row above, buying 3 of the 5 crates moves the real ceiling from 23 rupees 47 paise to 21 rupees 71 paise — about 7 percent. That is why every row prints the sentence "This ceiling holds at 5 whole crates" beside the number. The rounding is never optimistic; the crate count is the assumption you have to hold to.</p>
+
+    <h3>Why does it refuse to print anything until I say how many days until my next trip?</h3>
+    <p>Because the whole card depends on it. How many kilograms to bring home is what you expect to sell over the holding period; the crate space that follows from it is how the trip's fixed charges get split; and the split is what sets the ceiling. We have no data for how long anything keeps on a cart in an Indian summer, and we are not going to invent a default. Leave it blank and the card shows a named blank state — no bid, no break-even, and no zero pretending to be an answer.</p>
+
+    <h3>Does boliseema know today's mandi rates?</h3>
+    <p>No, and it never will. There is no rate feed, no scrape, no arrival-price history, and no internet at runtime at all. Every figure comes from a number you typed. The retail rate is what you think you can get — which is the one thing a vendor already knows in their bones and no dataset knows at all.</p>
+
+    <h3>What if no bid clears at the rate I entered?</h3>
+    <p>Then the row prints a dash and one sentence saying the ceiling is below zero at the retail rate, trip cost and margin you entered. It does not say do not buy, it does not say walk away, and it does not suggest cutting your own margin. boliseema prints a ceiling; the decision is yours. If the break-even itself is below zero there is no threshold to print either, so that column shows a dash too rather than a negative rupee figure.</p>
+
+    <h3>Where did the vegetable list and the 25 kg crate weight come from?</h3>
+    <p>The forty names are a starting list we wrote ourselves. The 25 kg crate weight is the same number repeated forty times, which is deliberately and visibly a placeholder rather than research — a per-vegetable table of typical crate weights would be fabrication. Shrink and daily sale ship as zero. Every row that is still untouched wears a PLACEHOLDER chip until you edit it. Weigh your own crate.</p>
+
+    <h3>Does it keep a credit or udhaar ledger?</h3>
+    <p>No, deliberately, and it never records who owes what. There is no dues book, no staff or wage register, and nothing to tap while you are trading. boliseema is done the night before, at home, and there is nothing in it to open during the auction.</p>
+
+    <h3>Where does my data go?</h3>
+    <p>Nowhere. The full app is local-first: your data is a SQLite file on your own machine and the app runs on localhost. There is no account, no sync, no encryption and nothing is uploaded. This web demo keeps everything in your browser tab and a refresh resets it. The page itself loads only its own files from this one origin — no fonts, no scripts and no CanvasKit from anyone else's server — so nothing about you reaches a third party either.</p>
+
+    <h2>Try it below</h2>
+    <p>The calculator below is loaded with a made-up trip for a cart that does not exist,
+    and the holding days are deliberately blank — typing them is the first thing it asks
+    of you. Nothing you type leaves this page.</p>
+  </main>
+
+  <div id="flutter-app"></div>
+
+  <script src="flutter.js" defer></script>
+  <!-- buildConfig is injected here at build time from the generated
+       flutter_bootstrap.js (scripts/build-web.sh). Without it the loader throws
+       "requires _flutter.buildConfig" and the app below never mounts — that bug
+       has shipped a blank page before. -->
+  <script>window._flutter=window._flutter||{};_flutter.buildConfig = {"engineRevision":"c416acfeb8126e097f758c664aaa3da929e27da0","builds":[{"compileTarget":"dart2js","renderer":"canvaskit","mainJsPath":"main.dart.js"},{}],"useLocalCanvasKit":true};</script>
+  <script>
+    window.addEventListener("load", function () {
+      _flutter.loader.load({
+        config: {
+          hostElement: document.getElementById("flutter-app"),
+          // The engine's last conditional third-party URL. Left alone,
+          // fontFallbackBaseUrl defaults to Google's font CDN and is fetched the
+          // moment a glyph is missing from the bundled fonts. Pinned to a
+          // same-origin path, a missing glyph costs a 404 on this origin instead
+          // of a request to Google. (CanvasKit itself is pinned by
+          // --no-web-resources-cdn at build time; see scripts/build-web.sh.)
+          fontFallbackBaseUrl: "fallback-fonts/"
+        }
+      });
+    });
+  </script>
+</body>
+</html>
